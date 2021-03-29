@@ -179,7 +179,8 @@ C:\Windows\System32\EduPrintProv.exe
 C:\Windows\System32\efsui.exe                                     
 C:\Windows\System32\EhStorAuthn.exe                               
 C:\Windows\System32\EoAExperiences.exe                            
-C:\Windows\System32\esentutl.exe                                  
+c:\windows\system32\escsvc64.exe
+C:\Windows\System32\esentutl.exe
 C:\Windows\System32\eudcedit.exe                                  
 C:\Windows\System32\eventcreate.exe                               
 C:\Windows\System32\eventvwr.exe                                  
