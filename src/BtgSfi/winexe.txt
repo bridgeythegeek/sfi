@@ -61,7 +61,8 @@ C:\Windows\System32\ByteCodeGenerator.exe
 C:\Windows\System32\cacls.exe                                     
 C:\Windows\System32\calc.exe                                      
 C:\Windows\System32\CameraSettingsUIHost.exe                      
-C:\Windows\System32\CastSrv.exe                                   
+C:\Windows\System32\CastSrv.exe
+c:\windows\system32\ceipdata.exe
 C:\Windows\System32\CertEnrollCtrl.exe                            
 C:\Windows\System32\certreq.exe                                   
 C:\Windows\System32\certutil.exe                                  
