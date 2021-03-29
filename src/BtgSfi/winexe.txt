@@ -155,7 +155,8 @@ C:\Windows\System32\dpapimig.exe
 C:\Windows\System32\DpiScaling.exe                                
 C:\Windows\System32\dpnsvr.exe                                    
 C:\Windows\System32\driverquery.exe                               
-C:\Windows\System32\drvinst.exe                                   
+C:\Windows\System32\drvinst.exe
+c:\windows\system32\dsac.exe
 C:\Windows\System32\DsmUserTask.exe                               
 C:\Windows\System32\dsregcmd.exe                                  
 C:\Windows\System32\dstokenclean.exe                              
