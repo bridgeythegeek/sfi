@@ -1,0 +1,2 @@
+# sfi
+Suspicious Filename Identifier
