@@ -111,7 +111,8 @@ C:\Windows\System32\ctfmon.exe
 C:\Windows\System32\cttune.exe                                    
 C:\Windows\System32\cttunesvr.exe                                 
 C:\Windows\System32\curl.exe                                      
-C:\Windows\System32\CustomInstallExec.exe                         
+C:\Windows\System32\CustomInstallExec.exe
+c:\windows\system32\cxuiusvc64.exe
 C:\Windows\System32\d3dconfig.exe                                 
 C:\Windows\System32\dasHost.exe                                   
 C:\Windows\System32\DataExchangeHost.exe                          
