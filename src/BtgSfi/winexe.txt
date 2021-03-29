@@ -147,7 +147,8 @@ C:\Windows\System32\dmcertinst.exe
 C:\Windows\System32\dmcfghost.exe                                 
 C:\Windows\System32\dmclient.exe                                  
 C:\Windows\System32\DmNotificationBroker.exe                      
-C:\Windows\System32\DmOmaCpMo.exe                                 
+C:\Windows\System32\DmOmaCpMo.exe
+c:\windows\system32\dns.exe
 C:\Windows\System32\dnscacheugc.exe                               
 C:\Windows\System32\doskey.exe                                    
 C:\Windows\System32\dpapimig.exe                                  
