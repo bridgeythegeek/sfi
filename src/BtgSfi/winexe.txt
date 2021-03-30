@@ -464,7 +464,8 @@ C:\Windows\System32\securekernel.exe
 C:\Windows\System32\SecurityHealthHost.exe                        
 C:\Windows\System32\SecurityHealthService.exe                     
 C:\Windows\System32\SecurityHealthSystray.exe                     
-C:\Windows\System32\SensorDataService.exe                         
+C:\Windows\System32\SensorDataService.exe
+c:\windows\system32\servermanager.exe
 C:\Windows\System32\services.exe                                  
 C:\Windows\System32\sessionmsg.exe                                
 C:\Windows\System32\sethc.exe                                     
