@@ -25,4 +25,4 @@ alg.exe
 %windir%\evil2.exe
 \\server1\c$\windows\evil3.exe
 \\server2\share\good.exe
-%windy%\evil2.exe
+#%windy%\evil2.exe

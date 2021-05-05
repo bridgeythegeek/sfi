@@ -41,7 +41,7 @@ class sfi:
                 self.winexes[parts[0]] = [parts[1]]
 
     @staticmethod
-    def split_path(item, resolve=False):
+    def split_path(item, resolve=True):
         
         # Windows
         if '\\' in item:
@@ -82,7 +82,7 @@ class sfi:
                 matches = []
 
                 # Check WinExe first.
-                path, base = sfi.split_path(item, resolve=True)
+                path, base = sfi.split_path(item)
                 if path in self.winexes:
                     if not base in self.winexes[path]:
                         matches.append('NoWin')
@@ -110,6 +110,7 @@ class sfi:
         result = []
         for future in concurrent.futures.as_completed(futures):
             result.extend(future.result())
+        self.pbar.close()
         return result   
 
 
@@ -123,5 +124,7 @@ if __name__ == '__main__':
 
     with open(args.file, encoding='utf-8') as f:
         todo = [x.strip().lower() for x in f.readlines() if not x.startswith('#')]
+    logging.debug(f"Read {len(todo):,} items from {args.file!r}.")
+    
     for match in sfi(todo, 2, 3).process():
         print(f"{match[0]}: {', '.join(match[1])}")
