@@ -1,35 +1,36 @@
+import argparse
 import concurrent.futures
 import inspect
+import logging
+import openpyxl
 import os
+import tqdm
 
 class sfi:
 
-    _WIN_DIRS = [
-        'windows',
-        'windows\\system32',
-        'windows\\syswow64',
-        'windows.old',
-        'windows.old\\system32',
-        'windows.old\\syswow64' 
-    ]
+    _ENV = {
+        '%systemdrive%':  None,
+        '%windir%': 'windows'
+    }
+
+    _SWAP = {
+        'windows.old': 'windows'
+    }
+
+    _win_dirs = []    
 
     def __init__(self, items, max_workers=3, items_per_thread=1000, winexe=None):
         self.items = items
         self.max_workers = max_workers
         self.items_per_thread = items_per_thread
+        self.have_errors = False
         if winexe is None:
             winexe = os.path.join(os.path.dirname(os.path.abspath(inspect.stack()[0].filename)), 'winexe.txt')
         self.winexes = {}
         with open(winexe) as f:
             winexes_ = [x.strip().lower() for x in f.readlines() if not x.startswith('#')]
         winexes_ = set(winexes_)
-        temp = []
-        for we in winexes_:
-            temp.append(we)
-            if 'windows' in we and not 'windows.old' in we:
-                temp.append(we.replace('windows', 'windows.old'))
-        winexes_ = temp
-        del(temp) 
+        logging.debug(f"Read {len(winexes_):,} known goods.")
         for we in winexes_:
             parts = sfi.split_path(we)
             if parts[0] is None or parts[1] is None:
@@ -40,30 +41,67 @@ class sfi:
                 self.winexes[parts[0]] = [parts[1]]
 
     @staticmethod
-    def split_path(item):
-        if '\\' in item:  # Windows
+    def split_path(item, resolve=False):
+        
+        # Windows
+        if '\\' in item:
+            if not resolve:
+                return item.rsplit('\\', 1)
+            
             parts = item.split('\\')
-            return ['\\'.join(parts[1:-1]), parts[-1]]
-        elif '/' in item: # *nix
-            return item.rsplit('/', 1)
+            
+            # Check for UNC
+            if len(parts[0]) < 1: # UNC
+                parts = parts[3:] # Chop the \\server\share
+            
+            # Check for environment variable
+            elif parts[0][0] == '%' and parts[0][-1] == '%' and not parts[0] in sfi._ENV:
+                raise Exception(f"Unhandled environment variable {parts[0]!r} in {item!r}")
+            if parts[0] in sfi._ENV and not sfi._ENV[parts[0]] is None:
+                parts.insert(1, sfi._ENV[parts[0]])
+            
+            # Check for fixups
+            if parts[1] in sfi._SWAP:
+                parts[1] = sfi._SWAP[parts[1]]
+            
+            return ['\\'.join(parts[1:-1]), parts[-1]]  # Drop the [A-Z]:
+        
+        # *nix
+        elif '/' in item:
+            if not resolve:
+                return item.rsplit('/', 1)
+        
+        # Err??
         else:
             return [None, None]
 
     def execute(self, i):
         result = []
         for item in self.items[i:i+self.items_per_thread]:
-            matches = []
-            # Check WinExe first.
-            path, base = sfi.split_path(item)
-            if path in sfi._WIN_DIRS:
-                if not base in self.winexes[path]:
-                    matches.append('NoWin')
-            if len(matches) > 0:
-                result.append((item, matches))
+            try:
+                matches = []
+
+                # Check WinExe first.
+                path, base = sfi.split_path(item, resolve=True)
+                if path in self.winexes:
+                    if not base in self.winexes[path]:
+                        matches.append('NoWin')
+                if len(matches) > 0:
+                    result.append((item, matches))
+
+                # Then the rules
+                # TODO
+
+            except Exception as ex:
+                logging.debug(f"Error whilst processing {item!r}: {ex}")
+                self.have_errors = True
+            
+            self.pbar.update(1)
         return result
 
     def process(self):
         with concurrent.futures.ThreadPoolExecutor(self.max_workers) as executor:
+            self.pbar = tqdm.tqdm(total=len(self.items))
             futures = []
             start = 0
             while start < len(self.items):
@@ -77,7 +115,13 @@ class sfi:
 
 if __name__ == '__main__':
 
-    with open('test.txt') as f:
+    argp = argparse.ArgumentParser()
+    argp.add_argument('file')
+    args = argp.parse_args()
+
+    logging.getLogger().setLevel(logging.DEBUG)
+
+    with open(args.file, encoding='utf-8') as f:
         todo = [x.strip().lower() for x in f.readlines() if not x.startswith('#')]
-    print(sfi(todo, 2, 3).process())
-    
+    for match in sfi(todo, 2, 3).process():
+        print(f"{match[0]}: {', '.join(match[1])}")
