@@ -21,3 +21,8 @@ C:\Windows\System32\ApplicationFrameHost.exe
 C:\Windows\System32\ApplySettingsTemplateCatalog.exe              
 C:\Windows\System32\ApplyTrustOffline.exe                         
 alg.exe
+%systemdrive%\windows\evil1.exe
+%windir%\evil2.exe
+\\server1\c$\windows\evil3.exe
+\\server2\share\good.exe
+%windy%\evil2.exe
