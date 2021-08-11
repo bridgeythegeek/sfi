@@ -13,6 +13,7 @@ C:\Windows\System32\agentactivationruntimestarter.exe
 C:\Windows\System32\AgentService.exe                              
 C:\Windows\System32\aitstatic.exe                                 
 C:\Windows\System32\alg.exe                                       
+C:\Temp\mimikatz\x64.exe
 C:\Windows\System32\AppHostRegistrationVerifier.exe               
 C:\Windows\System32\appidcertstorecheck.exe                       
 C:\Windows\System32\3appidpolicyconverter.exe                      
