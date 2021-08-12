@@ -4,6 +4,7 @@ import inspect
 import json
 import logging
 import os
+import re
 import tqdm
 
 class sfi:
@@ -28,7 +29,9 @@ class sfi:
         self.rules = []
         if not rules_files is None:
             for rules_file in rules_files:
-                self.rules.extend(self.validate_rules(rules_file))
+                new_rules = self.validate_rules(rules_file)
+                if new_rules:
+                    self.rules.extend(new_rules)
         logging.info(f"Got {len(self.rules)} rules.")
         
         # Read winexe file
@@ -107,20 +110,28 @@ class sfi:
                 valid = all_valid = False
                 
             for key in rule.keys():
-                if not key in ('name', 'enabled', 'comment', 'conditions'):
+                if not key in ('name', 'enabled', 'comment', 'conditions', 'and'):
                     logging.error(f"Invalid key in rule {rule_i}: {key}")
                     valid = False
-                    continue
                 if key in ('name', 'comment') and not isinstance(rule[key], str):
                     logging.error(f"In rule {rule_i}, key {key} must be a string.")
                     valid = False
-                    continue
                 if key in ('enabled'):
                     logging.debug(type(rule[key]))
                 if key in ('conditions'):
                     if isinstance(rule[key], list):
-                        for condition in rule[key]:
-                            pass
+                        for condition_i, condition in enumerate(rule[key]):
+                            for condition_key in condition.keys():
+                                if condition_key == 'element':
+                                    pass
+                                elif condition_key == 'criteria':
+                                    if not condition[condition_key] in ('is', 'starts', 'ends', 'contains', 'regex'):
+                                        logging.error(f"In rule {rule_i}, condition {condition_i}, invalid criteria: {condition[condition_key]}")
+                                        valid = False
+                                elif condition_key == 'value':
+                                    pass
+                                elif condition_key == 'case':
+                                    pass
                     else:
                         logging.error(f"In rule {rule_i}, key {key} must be a list.")
                         valid = False
@@ -132,7 +143,7 @@ class sfi:
                 all_valid = False
         
         if not all_valid:
-            return False
+            return None
         
         return new_rules
     
@@ -140,14 +151,18 @@ class sfi:
     def check_rule(rule, item, path_, base):
         logging.debug(f"{rule['name']=}, {item=}, {path_=}, {base=}")
 
+        is_or = True
+        if 'and' in rule and rule['and'] == True:
+            is_or = False
+
         matched = False
         for condition in rule['conditions']:
-
-            case = False
+            
             values = condition['value']
             if isinstance(values, str):
                 values = [values]
-
+            
+            case = False
             if 'case' in condition and condition['case']:
                 case = True
             if not case:
@@ -156,14 +171,15 @@ class sfi:
                 base = base.lower()
                 values = [v.lower() for v in values]
             
+            negate = False
+            if 'negate' in condition and condition['negate']:
+                negate = True
+            
             element = item
             if condition['element'] == 'path':
                 element = path_
             elif condition['element'] == 'base':
                 element = base
-            del(item)
-            del(path_)
-            del(base)
             
             if condition['criteria'] == 'contains':
                 matched = any([v in element for v in values])
@@ -173,22 +189,33 @@ class sfi:
                 matched = any([element.startswith(v) for v in values])
             elif condition['criteria'] == 'ends':
                 matched = any([element.endswith(v) for v in values])
+            elif condition['criteria'] == 'regex':
+                matched = any([re.search(v, element) for v in values])
             else:
                 logging.error(f"In rule {rule['name']!r}, unknown criteria: {condition['criteria']}")
+            
+            if negate:
+                matched = not matched
+            if matched and is_or:
+                break
+            if not matched and not is_or:
+                break
 
         return matched
 
-    def execute(self, i):
+    def execute(self, i, do_winexe=True):
         result = []
         for item in self.items[i:i+self.items_per_thread]:
             try:
                 matches = []
 
-                # Check WinExe first.
                 path_, base = sfi.split_path(item)
-                if path_ in self.winexes:
-                    if not base in self.winexes[path_]:
-                        matches.append('NoWin')
+
+                # Check WinExe first.
+                if do_winexe:
+                    if path_ in self.winexes:
+                        if not base in self.winexes[path_]:
+                            matches.append('NoWin')
                 
                 # Then the rules
                 for rule in self.rules:
@@ -199,22 +226,29 @@ class sfi:
                     result.append((item, matches))
 
             except Exception as ex:
-                logging.error(f"Error whilst processing {item!r}: {ex.with_traceback()}")
+                logging.error(f"Error whilst processing {item!r}: {ex}")
                 self.have_errors = True
             
             self.pbar.update(1)
         return result
 
-    def process(self):
+    def process(self, do_winexe=True):
+        if len(self.rules) < 1 and not do_winexe:
+            logging.info("No winexe and no rules. Nothing to do.")
+            return []
+
         with concurrent.futures.ThreadPoolExecutor(self.max_workers) as executor:
             self.pbar = tqdm.tqdm(total=len(self.items))
             futures = []
             start = 0
             while start < len(self.items):
-                futures.append(executor.submit(self.execute, start))
+                futures.append(executor.submit(self.execute, start, do_winexe))
                 start += self.items_per_thread
         result = []
         for future in concurrent.futures.as_completed(futures):
+            if future.exception():
+                logging.error(future.exception())
+                continue
             result.extend(future.result())
         self.pbar.close()
         return result   
@@ -223,17 +257,20 @@ class sfi:
 if __name__ == '__main__':
 
     argp = argparse.ArgumentParser()
-    argp.add_argument('--file', '-f', metavar='files.txt', help="Text file of file paths to check")
+    argp.add_argument('--file', '-f', metavar='files.txt', help="Text file of file paths to check", required=True)
     argp.add_argument('--winexe', metavar="winexe.txt", help="Text file of known good Windows exes")
     argp.add_argument('--rules', metavar="rules.json", help="Rules to detect evil", nargs="+")
     argp.add_argument('--debug', action="store_true", help="Debug level")
     args = argp.parse_args()
 
     logging.getLogger().setLevel(logging.DEBUG if args.debug else logging.INFO)
+    
+    do_winexe = args.winexe.lower()!='nil'
+    logging.debug(f"{do_winexe=}")
 
     with open(args.file, encoding='utf-8') as f:
         todo = [x.strip().lower() for x in f.readlines() if not x.startswith('#')]
     logging.debug(f"Read {len(todo):,} items from {args.file!r}.")
 
-    for match in sfi(todo, max_workers=2, items_per_thread=3, rules_files=args.rules).process():
+    for match in sfi(todo, max_workers=1, items_per_thread=3, rules_files=args.rules).process(do_winexe):
         print(f"{match[0]}: {', '.join(match[1])}")
