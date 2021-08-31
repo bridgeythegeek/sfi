@@ -83,6 +83,7 @@ C:\Windows\System32\cipher.exe
 C:\Windows\System32\cleanmgr.exe
 C:\Windows\System32\cliconfg.exe
 C:\Windows\System32\clip.exe
+C:\Windows\System32\ClipRenew.exe
 C:\Windows\System32\ClipUp.exe
 C:\Windows\System32\CloudExperienceHostBroker.exe
 C:\Windows\System32\CloudNotifications.exe
@@ -305,6 +306,7 @@ C:\Windows\System32\LicenseManagerShellext.exe
 C:\Windows\System32\licensingdiag.exe
 C:\Windows\System32\LicensingUI.exe
 C:\Windows\System32\LocationNotificationWindows.exe
+C:\Windows\System32\LocationNotifications.exe
 C:\Windows\System32\Locator.exe
 C:\Windows\System32\LockAppHost.exe
 C:\Windows\System32\LockScreenContentServer.exe
@@ -413,6 +415,7 @@ C:\Windows\System32\PackageInspector.exe
 C:\Windows\System32\PasswordOnWakeSettingFlyout.exe
 C:\Windows\System32\PATHPING.EXE
 C:\Windows\System32\pcalua.exe
+C:\Windows\System32\pcasvc.dll
 C:\Windows\System32\pcaui.exe
 C:\Windows\System32\pcwrun.exe
 C:\Windows\System32\perfmon.exe
@@ -422,6 +425,7 @@ C:\Windows\System32\PinEnrollmentBroker.exe
 C:\Windows\System32\PING.EXE
 C:\Windows\System32\PkgMgr.exe
 C:\Windows\System32\PktMon.exe
+C:\Windows\System32\pla.dll
 C:\Windows\System32\plasrv.exe
 C:\Windows\System32\PnPUnattend.exe
 C:\Windows\System32\pnputil.exe
@@ -518,6 +522,7 @@ C:\Windows\System32\sdbinst.exe
 C:\Windows\System32\sdchange.exe
 C:\Windows\System32\sdclt.exe
 C:\Windows\System32\sdiagnhost.exe
+C:\Windows\System32\SDNDiagnosticsTask.exe
 C:\Windows\System32\SearchFilterHost.exe
 C:\Windows\System32\SearchIndexer.exe
 C:\Windows\System32\SearchProtocolHost.exe
@@ -566,6 +571,7 @@ C:\Windows\System32\SppExtComObj.Exe
 C:\Windows\System32\sppsvc.exe
 C:\Windows\System32\srdelayed.exe
 C:\Windows\System32\SrTasks.exe
+C:\Windows\System32\SrvInitConfig.exe
 C:\Windows\System32\stordiag.exe
 C:\Windows\System32\subst.exe
 C:\Windows\System32\svchost.exe
@@ -603,6 +609,7 @@ C:\Windows\System32\tdlrecover.exe
 C:\Windows\System32\ThumbnailExtractionHost.exe
 C:\Windows\System32\TieringEngineService.exe
 C:\Windows\System32\timeout.exe
+C:\Windows\System32\tlsbln.exe
 C:\Windows\System32\TokenBrokerCookies.exe
 C:\Windows\System32\TpmInit.exe
 C:\Windows\System32\TpmTool.exe

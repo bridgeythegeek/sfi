@@ -258,7 +258,7 @@ if __name__ == '__main__':
 
     argp = argparse.ArgumentParser()
     argp.add_argument('--file', '-f', metavar='files.txt', help="Text file of file paths to check", required=True)
-    argp.add_argument('--winexe', metavar="winexe.txt", help="Text file of known good Windows exes")
+    argp.add_argument('--winexe', metavar="winexe.txt", help="Text file of known good Windows exes", default="winexe.txt")
     argp.add_argument('--rules', metavar="rules.json", help="Rules to detect evil", nargs="+")
     argp.add_argument('--debug', action="store_true", help="Debug level")
     args = argp.parse_args()
