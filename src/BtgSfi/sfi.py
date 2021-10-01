@@ -10,8 +10,12 @@ import tqdm
 class sfi:
 
     _ENV = {
-        '%systemdrive%':  None,
-        '%windir%': 'windows'
+        r'%systemdrive%':  None,
+        r'%hot%': 'c:',
+        r'%windir%': 'windows',
+        r'%osdrive%': 'c:',
+        r'%system32%': 'windows\system32',
+        r'%programfiles%': 'program files'
     }
 
     _SWAP = {
@@ -79,8 +83,7 @@ class sfi:
         
         # *nix
         elif '/' in item:
-            if not resolve:
-                return item.rsplit('/', 1)
+            return item.rsplit('/', 1)
         
         # Assume it's just a file name, no path
         else:
@@ -209,7 +212,9 @@ class sfi:
             try:
                 matches = []
 
+                logging.debug(item)
                 path_, base = sfi.split_path(item)
+                logging.debug(f"{path_}, {base}")
 
                 # Check WinExe first.
                 if do_winexe:
