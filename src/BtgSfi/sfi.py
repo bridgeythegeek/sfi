@@ -15,7 +15,8 @@ class sfi:
         r'%windir%': 'windows',
         r'%osdrive%': 'c:',
         r'%system32%': 'windows\system32',
-        r'%programfiles%': 'program files'
+        r'%programfiles%': 'program files',
+        r'%removable%': 'c:',
     }
 
     _SWAP = {
