@@ -10,6 +10,7 @@ import tqdm
 class sfi:
 
     _ENV = {
+        r'systemroot': 'windows',
         r'%systemdrive%':  None,
         r'%hot%': 'c:',
         r'%windir%': 'windows',
@@ -58,16 +59,36 @@ class sfi:
 
     @staticmethod
     def split_path(item, resolve=True):
+
+        # Strip double quotes
+        # Do them separately to try and be helpful
+        if item[0] == '"':
+            item = item[1:]
+        if item[-1] == '"':
+            item = item[:-1]
         
         # Windows
         if '\\' in item:
             if not resolve:
                 return item.rsplit('\\', 1)
             
+            if item.startswith("\\??\\"):
+                item = item[4:]
+            
             parts = item.split('\\')
+
+            logging.debug(f"{item=}, {parts=}")
+
+            # Handle instances like: \SystemRoot\System32\foo.exe
+            if len(parts[0]) == 0 and parts[1].lower() in sfi._ENV:
+                temp = sfi._ENV[parts[1]]
+                parts = parts[2:]
+                parts.insert(0, temp)
+                parts.insert(0, 'c:\\')
+                del(temp)
             
             # Check for UNC
-            if len(parts[0]) < 1: # UNC
+            elif len(parts[0]) < 1: # UNC
                 parts = parts[3:] # Chop the \\server\share
             
             # Check for environment variable

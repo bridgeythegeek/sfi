@@ -81,6 +81,7 @@ C:\Windows\System32\choice.exe
 C:\Windows\System32\CIDiag.exe
 C:\Windows\System32\cipher.exe
 C:\Windows\System32\cleanmgr.exe
+C:\Windows\System32\clfs.sys
 C:\Windows\System32\cliconfg.exe
 C:\Windows\System32\clip.exe
 C:\Windows\System32\ClipRenew.exe
@@ -560,6 +561,7 @@ C:\Windows\System32\SmartScreenSettings.exe
 C:\Windows\System32\smss.exe
 C:\Windows\System32\SndVol.exe
 C:\Windows\System32\SnippingTool.exe
+C:\Windows\System32\snmp.exe
 C:\Windows\System32\snmptrap.exe
 C:\Windows\System32\sort.exe
 C:\Windows\System32\SpaceAgent.exe
@@ -697,6 +699,7 @@ C:\Windows\System32\winresume.exe
 C:\Windows\System32\winrs.exe
 C:\Windows\System32\winrshost.exe
 C:\Windows\System32\WinRTNetMUAHostServer.exe
+C:\Windows\System32\wins.exe
 C:\Windows\System32\WinSAT.exe
 C:\Windows\System32\winver.exe
 C:\Windows\System32\wkspbroker.exe
