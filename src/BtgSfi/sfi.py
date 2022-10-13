@@ -21,15 +21,28 @@ class sfi:
     }
 
     _SWAP = {
-        'windows.old': 'windows'
+        'windows.old': 'windows',
+        'winnt': 'windows'
     }
 
-    def __init__(self, items, max_workers=3, items_per_thread=1000, winexe_file=None, rules_files=None):
+    _WIN_BIN_EXTS = ('bat', 'cs', 'dll', 'exe', 'ps1', 'sys', 'vbs')
+
+    def __init__(self, items, max_workers=3, items_per_thread=1000, win_bin_exts_only=True, winexe_file=None, rules_files=None):
         
-        self.items = items
         self.max_workers = max_workers
         self.items_per_thread = items_per_thread
         self.have_errors = False
+
+        if win_bin_exts_only:
+            self.items = []
+            for item in items:
+                base = sfi.split_path(item)[-1]
+                if '.' in base:
+                    ext = base.split('.')[-1].lower()
+                    if ext in sfi._WIN_BIN_EXTS:
+                        self.items.append(item)
+        else:
+            self.items = items
 
         # Read rules file
         self.rules = []
@@ -58,7 +71,7 @@ class sfi:
                 self.winexes[parts[0]] = [parts[1]]
 
     @staticmethod
-    def split_path(item, resolve=True):
+    def split_path(item: str, resolve=True):
 
         # Strip double quotes
         # Do them separately to try and be helpful
@@ -238,7 +251,7 @@ class sfi:
                 path_, base = sfi.split_path(item)
                 logging.debug(f"{path_}, {base}")
 
-                # Check WinExe first.
+                # Check WinExe first
                 if do_winexe:
                     if path_ in self.winexes:
                         if not base in self.winexes[path_]:
@@ -286,6 +299,7 @@ if __name__ == '__main__':
     argp = argparse.ArgumentParser()
     argp.add_argument('--file', '-f', metavar='files.txt', help="Text file of file paths to check", required=True)
     argp.add_argument('--winexe', metavar="winexe.txt", help="Text file of known good Windows exes", default="winexe.txt")
+    argp.add_argument('--winbinonly', help="Filter input for Windows binary extensions", action="store_true")
     argp.add_argument('--rules', metavar="rules.json", help="Rules to detect evil", nargs="+")
     argp.add_argument('--debug', action="store_true", help="Debug level")
     args = argp.parse_args()
@@ -299,5 +313,5 @@ if __name__ == '__main__':
         todo = [x.strip().lower() for x in f.readlines() if not x.startswith('#')]
     logging.debug(f"Read {len(todo):,} items from {args.file!r}.")
 
-    for match in sfi(todo, max_workers=1, items_per_thread=3, rules_files=args.rules).process(do_winexe):
+    for match in sfi(todo, max_workers=1, items_per_thread=3, win_bin_exts_only=args.winbinonly, rules_files=args.rules).process(do_winexe):
         print(f"{match[0]}: {', '.join(match[1])}")
